@@ -6,7 +6,6 @@ import pika
 
 def on_message(channel, method, properties, body):
     try:
-        # process and print
         channel.basic_ack(delivery_tag=method.delivery_tag)
         print(body.decode())
     except Exception:
@@ -14,7 +13,7 @@ def on_message(channel, method, properties, body):
 
 def shutdown(sig, frame):
     print("Shutting down...")
-    channel.stop_consuming()  # breaks out of start_consuming()
+    channel.stop_consuming()
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(
@@ -25,23 +24,37 @@ connection = pika.BlockingConnection(
         )
     )
 )
+
 channel = connection.channel()
 
-channel.exchange_declare(exchange="receipts", exchange_type="direct", durable=True)
+channel.exchange_declare(
+    exchange="receipts",
+    exchange_type="direct",
+    durable=True
+)
 
 channel.queue_declare(queue="queue.client", durable=True)
-channel.queue_bind(queue="queue.client", exchange="receipts", routing_key="receipt.client")
+channel.queue_bind(
+    queue="queue.client",
+    exchange="receipts",
+    routing_key="receipt.client"
+)
 
 channel.queue_declare(queue="queue.kitchen", durable=True)
-channel.queue_bind(queue="queue.kitchen", exchange="receipts", routing_key="receipt.kitchen")
+channel.queue_bind(
+    queue="queue.kitchen",
+    exchange="receipts",
+    routing_key="receipt.kitchen"
+)
 
-channel.basic_consume(queue=getenv("QUEUE_NAME", "queue.client"), on_message_callback=on_message)
+channel.basic_consume(
+    queue=getenv("QUEUE_NAME", "queue.client"),
+    on_message_callback=on_message
+)
 
-signal.signal(signal.SIGTERM, shutdown)  # systemd stop / kill
-signal.signal(signal.SIGINT, shutdown)   # Ctrl+C
+signal.signal(signal.SIGTERM, shutdown)
+signal.signal(signal.SIGINT, shutdown)
 
-channel.start_consuming()  # blocks here
+channel.start_consuming()
 
-
-
-connection.close()  # runs after stop_consuming() returns
+connection.close()
