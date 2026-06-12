@@ -1,13 +1,15 @@
 import signal
-
 from os import getenv
 
 import pika
+from escpos.printer import Usb
+from printer import print_receipt
+
 
 def on_message(channel, method, properties, body):
     try:
         channel.basic_ack(delivery_tag=method.delivery_tag)
-        print(body.decode())
+        print(print_receipt(printer, body.decode()))
     except Exception:
         channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
@@ -54,6 +56,15 @@ channel.basic_consume(
 
 signal.signal(signal.SIGTERM, shutdown)
 signal.signal(signal.SIGINT, shutdown)
+
+global printer
+
+printer = Usb(
+    idVendor=8401,
+    idProduct=28679,
+    in_ep=0x82,
+    out_ep=0x02
+)
 
 channel.start_consuming()
 
