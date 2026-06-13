@@ -89,6 +89,9 @@ def print_both(channel):
                 channel.basic_nack(delivery_tag=kitchen_method.delivery_tag, requeue=True)
             time.sleep(1)
 
+signal.signal(signal.SIGTERM, shutdown)
+signal.signal(signal.SIGINT, shutdown)
+
 if QUEUE_NAME == "both":
     print_both(channel)
 else:
@@ -97,10 +100,5 @@ else:
         on_message_callback=on_message_factory(QUEUE_NAME)
     )
     channel.start_consuming()
-
-signal.signal(signal.SIGTERM, shutdown)
-signal.signal(signal.SIGINT, shutdown)
-
-channel.start_consuming()
 
 connection.close()
