@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 def _create_img(order_id):
     width = 576
     height = 180
+    order_id = "#" + str(order_id)
 
     img = Image.new("RGB", (width, height), "black")
     draw = ImageDraw.Draw(img)
@@ -31,7 +32,7 @@ def _create_img(order_id):
 
 
 def print_receipt(printer, order):
-    order_id = _create_img(order["id"])
+    order_id = _create_img(order["order_id"])
     receipt_type = order["receipt_type"]
 
     printer.set(
