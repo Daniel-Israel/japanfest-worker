@@ -37,20 +37,20 @@ connection = pika.BlockingConnection(
 
 global printer
 
-profile = {
-    'media': {
-        'width': {
-            'pixel': 576
-        }
-    }
-}
+# profile = {
+#     'media': {
+#         'width': {
+#             'pixel': 576
+#         }
+#     }
+# }
 
 printer = Usb(
     idVendor=8401,
     idProduct=28679,
     in_ep=0x82,
     out_ep=0x02,
-    profile=profile
+    # profile=profile
 )
 
 channel = connection.channel()
