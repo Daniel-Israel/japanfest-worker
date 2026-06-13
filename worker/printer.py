@@ -48,7 +48,7 @@ def print_receipt(printer, order):
         font='a'
     )
 
-    printer.text("Festival do Japão")
+    printer.text("\nFestival do Japão")
     printer.ln()
     printer.text("Barraquinha de Fukushima\n")
     printer.ln()
@@ -70,19 +70,17 @@ def print_receipt(printer, order):
             _format_num(order["total_price"])
         )
         printer.text(txt)
+        printer.ln()
         for item in order["items"]:
-            printer.ln()
             txt = "{}x - {} R$ {}\n".format(
                 item["quantity"],
                 item["product_name"],
                 _format_num(item["unit_price"])
             )
             printer.text(txt)
-            printer.ln()
             for customization in item["customizations"]:
                 txt = "   ----{}\n".format(customization)
                 printer.text(txt)
-                printer.ln()
         printer.ln()
         printer.cut()
 
