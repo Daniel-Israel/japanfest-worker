@@ -1,10 +1,14 @@
 from PIL import Image, ImageDraw, ImageFont
 
 
+def _format_num(num):
+    return f"{num:.2f}".replace('.', ',')
+
+
 def _create_img(order_id):
     width = 576
     height = 180
-    order_id = "#" + str(order_id) + "\n"
+    order_id = "#" + str(order_id)
 
     img = Image.new("RGB", (width, height), "black")
     draw = ImageDraw.Draw(img)
@@ -63,17 +67,19 @@ def print_receipt(printer, order):
     if receipt_type == "client":
         txt = "Pagamento via {}: R$ {}".format(
             order["payment_method"],
-            order["total_price"]
+            _format_num(order["total_price"])
         )
         printer.text(txt)
-        printer.ln()
         for item in order["items"]:
+            printer.ln()
             txt = "{}x - {} R$ {}\n".format(
-                item["quantity"], item["product_name"], item["unit_price"]
+                item["quantity"],
+                item["product_name"],
+                _format_num(item["unit_price"])
             )
             printer.text(txt)
             for customization in item["customizations"]:
-                txt = "----{}".format(customization)
+                txt = "----{}\n".format(customization)
                 printer.text(txt)
         printer.cut()
 
