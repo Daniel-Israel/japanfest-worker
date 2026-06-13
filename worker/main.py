@@ -67,20 +67,36 @@ channel.queue_bind(
     routing_key="receipt.kitchen"
 )
 
+def print_both(channel):
+    while True:
+        client_method, client_props, client_body = channel.basic_get("queue.client", auto_ack=False)
+        kitchen_method, kitchen_props, kitchen_body = channel.basic_get("queue.kitchen", auto_ack=False)
+
+        if client_body and kitchen_body:
+            try:
+                print_receipt(printer, json.loads(client_body.decode()))
+                time.sleep(int(getenv("SLEEP", 5)))
+                print_receipt(printer, json.loads(kitchen_body.decode()))
+                channel.basic_ack(delivery_tag=client_method.delivery_tag)
+                channel.basic_ack(delivery_tag=kitchen_method.delivery_tag)
+            except Exception:
+                channel.basic_nack(delivery_tag=client_method.delivery_tag, requeue=False)
+                channel.basic_nack(delivery_tag=kitchen_method.delivery_tag, requeue=False)
+        else:
+            if client_body:
+                channel.basic_nack(delivery_tag=client_method.delivery_tag, requeue=True)
+            if kitchen_body:
+                channel.basic_nack(delivery_tag=kitchen_method.delivery_tag, requeue=True)
+            time.sleep(1)
+
 if QUEUE_NAME == "both":
-    channel.basic_consume(
-        queue="queue.client",
-        on_message_callback=on_message_factory("both")
-    )
-    channel.basic_consume(
-        queue="queue.kitchen",
-        on_message_callback=on_message_factory("both")
-    )
+    print_both(channel)
 else:
     channel.basic_consume(
         queue=f"queue.{QUEUE_NAME}",
         on_message_callback=on_message_factory(QUEUE_NAME)
     )
+    channel.start_consuming()
 
 signal.signal(signal.SIGTERM, shutdown)
 signal.signal(signal.SIGINT, shutdown)

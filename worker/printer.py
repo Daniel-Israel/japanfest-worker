@@ -1,6 +1,3 @@
-import time
-from os import getenv
-
 from PIL import Image, ImageDraw, ImageFont
 
 
