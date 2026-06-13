@@ -81,6 +81,7 @@ def print_receipt(printer, order):
             for customization in item["customizations"]:
                 txt = "----{}\n".format(customization)
                 printer.text(txt)
+        printer.ln()
         printer.cut()
 
     else:
@@ -93,6 +94,7 @@ def print_receipt(printer, order):
             for customization in item["customizations"]:
                 txt = "----{}\n".format(customization)
                 printer.text(txt)
+        printer.ln()
         printer.cut()
     return "Via {} do pedido {} impresso".format(
         receipt_type,
