@@ -1,6 +1,5 @@
 import signal
 import json
-import time
 from os import getenv
 
 import pika
@@ -18,7 +17,6 @@ def on_message_factory(receipt_type):
             channel.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
-    time.sleep(int(getenv("SLEEP", 2)))
     return on_message
 
 def shutdown(sig, frame):
@@ -37,20 +35,11 @@ connection = pika.BlockingConnection(
 
 global printer
 
-# profile = {
-#     'media': {
-#         'width': {
-#             'pixel': 576
-#         }
-#     }
-# }
-
 printer = Usb(
     idVendor=8401,
     idProduct=28679,
     in_ep=0x82,
-    out_ep=0x02,
-    # profile=profile
+    out_ep=0x02
 )
 
 channel = connection.channel()
@@ -80,7 +69,6 @@ if QUEUE_NAME == "both":
         queue="queue.client",
         on_message_callback=on_message_factory("both")
     )
-    time.sleep(int(getenv("SLEEP", 2)))
     channel.basic_consume(
         queue="queue.kitchen",
         on_message_callback=on_message_factory("both")

@@ -1,3 +1,6 @@
+import time
+from os import getenv
+
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -38,6 +41,10 @@ def _create_img(order_id):
 def print_receipt(printer, order):
     order_id = _create_img(order["order_id"])
     receipt_type = order["receipt_type"]
+
+    if receipt_type != "client":
+        time.sleep(int(getenv("SLEEP", 2)))
+
 
     printer.set(
         align="center",
