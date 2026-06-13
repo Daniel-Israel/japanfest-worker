@@ -57,7 +57,7 @@ def print_receipt(printer, order):
         double_height=False,
         bold=False,
         density=4,
-        font='a'
+        font='b'
     )
 
     if receipt_type == "client":
@@ -84,4 +84,7 @@ def print_receipt(printer, order):
                 txt = "----{}".format(customization)
                 printer.text(txt)
         printer.cut()
-    return "Pedido {} impresso".format(order["order_id"])
+    return "Via {} do pedido {} impresso".format(
+        receipt_type,
+        order["order_id"]
+    )
