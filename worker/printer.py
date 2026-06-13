@@ -78,9 +78,11 @@ def print_receipt(printer, order):
                 _format_num(item["unit_price"])
             )
             printer.text(txt)
+            printer.ln()
             for customization in item["customizations"]:
-                txt = "----{}\n".format(customization)
+                txt = "   ----{}\n".format(customization)
                 printer.text(txt)
+                printer.ln()
         printer.ln()
         printer.cut()
 
@@ -91,9 +93,11 @@ def print_receipt(printer, order):
                 item["quantity"], item["product_name"]
             )
             printer.text(txt)
+            printer.ln()
             for customization in item["customizations"]:
-                txt = "----{}\n".format(customization)
+                txt = "   ----{}\n".format(customization)
                 printer.text(txt)
+                printer.ln()
         printer.ln()
         printer.cut()
     return "Via {} do pedido {} impresso".format(

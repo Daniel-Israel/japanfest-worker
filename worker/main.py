@@ -13,9 +13,10 @@ QUEUE_NAME = getenv("PRINTER_ROLE", "both")
 def on_message_factory(receipt_type):
     def on_message(channel, method, properties, body):
         try:
-            time.sleep(int(getenv("SLEEP", 5)))
             data = json.loads(body.decode())
             print_receipt(printer, data)
+            if receipt_type == "both":
+                time.sleep(int(getenv("SLEEP", 2)))
             channel.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
