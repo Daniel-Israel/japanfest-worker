@@ -61,11 +61,14 @@ def print_receipt(printer, order):
     )
 
     if receipt_type == "client":
-        txt = "Pagamento via {}: R${}".format(order["payment_method"], order["total_price"])
+        txt = "Pagamento via {}: R$ {}".format(
+            order["payment_method"],
+            order["total_price"]
+        )
         printer.text(txt)
         printer.ln()
         for item in order["items"]:
-            txt = "{}x - {} R${}\n".format(
+            txt = "{}x - {} R$ {}\n".format(
                 item["quantity"], item["product_name"], item["unit_price"]
             )
             printer.text(txt)
