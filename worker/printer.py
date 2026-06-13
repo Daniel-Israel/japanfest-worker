@@ -84,4 +84,4 @@ def print_receipt(printer, order):
                 txt = "----{}".format(customization)
                 printer.text(txt)
         printer.cut()
-    return "Pedido {} impresso".format(order_id)
+    return "Pedido {} impresso".format(order["order_id"])
