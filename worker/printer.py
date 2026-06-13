@@ -46,26 +46,26 @@ def print_receipt(printer, order):
 
     printer.text("Festival do Japão")
     printer.ln()
-    printer.text("Barraquinha de Fukushima")
+    printer.text("Barraquinha de Fukushima\n")
     printer.ln()
     printer.image(order_id)
     printer.ln()
 
     printer.set(
         align="left",
-        double_width=True,
-        double_height=True,
-        bold=True,
+        double_width=False,
+        double_height=False,
+        bold=False,
         density=8,
         font='a'
     )
 
     if receipt_type == "client":
-        txt = "{}: R${}".format(order["payment_method"], order["total_price"])
+        txt = "Pagamento via {}: R${}".format(order["payment_method"], order["total_price"])
         printer.text(txt)
         printer.ln()
         for item in order["items"]:
-            txt = "{}x - {} R${}".format(
+            txt = "{}x - {} R${}\n".format(
                 item["quantity"], item["product_name"], item["unit_price"]
             )
             printer.text(txt)
