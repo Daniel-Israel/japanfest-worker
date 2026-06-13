@@ -15,10 +15,11 @@ def on_message_factory(receipt_type):
         try:
             data = json.loads(body.decode())
             print_receipt(printer, data)
-            time.sleep(int(getenv("SLEEP", 2)))
             channel.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+    if receipt_type == "both":
+        time.sleep(int(getenv("SLEEP", 2)))
     return on_message
 
 def shutdown(sig, frame):
