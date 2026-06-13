@@ -43,7 +43,7 @@ def print_receipt(printer, order):
     receipt_type = order["receipt_type"]
 
     if receipt_type != "client":
-        time.sleep(int(getenv("SLEEP", 2)))
+        time.sleep(int(getenv("SLEEP", 5)))
 
 
     printer.set(
@@ -89,6 +89,7 @@ def print_receipt(printer, order):
                 txt = "   ----{}\n".format(customization)
                 printer.text(txt)
         printer.ln()
+        printer.print_and_feed(2)
         printer.cut()
 
     else:
@@ -102,6 +103,7 @@ def print_receipt(printer, order):
                 printer.text(txt)
         printer.text("\n")
         printer.ln()
+        printer.print_and_feed(2)
         printer.cut()
     return "Via {} do pedido {} impresso".format(
         receipt_type,
