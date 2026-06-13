@@ -42,10 +42,6 @@ def print_receipt(printer, order):
     order_id = _create_img(order["order_id"])
     receipt_type = order["receipt_type"]
 
-    if receipt_type != "client":
-        time.sleep(int(getenv("SLEEP", 5)))
-
-
     printer.set(
         align="center",
         double_width=True,
@@ -54,6 +50,11 @@ def print_receipt(printer, order):
         density=8,
         font='a'
     )
+
+    if receipt_type != "client":
+        time.sleep(int(getenv("SLEEP", 5)))
+        printer.text("\n\n\n\n\n")
+        printer.ln(2)
 
     printer.text("Festival do Japão")
     printer.ln()
@@ -89,7 +90,6 @@ def print_receipt(printer, order):
                 txt = "   ----{}\n".format(customization)
                 printer.text(txt)
         printer.ln()
-        printer.text("\n\n\n\n")
         printer.cut()
 
     else:
@@ -103,7 +103,7 @@ def print_receipt(printer, order):
                 printer.text(txt)
         printer.text("\n")
         printer.ln()
-        printer.text("\n\n\n\n")
+        
         printer.cut()
     return "Via {} do pedido {} impresso".format(
         receipt_type,
