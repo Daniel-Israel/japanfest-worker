@@ -1,5 +1,6 @@
 import signal
 import json
+import time
 from os import getenv
 
 import pika
@@ -7,14 +8,19 @@ from escpos.printer import Usb
 from printer import print_receipt
 
 
-def on_message(channel, method, properties, body):
-    try:
-        data = json.loads(body.decode())
-        print(print_receipt(printer, data))
-        channel.basic_ack(delivery_tag=method.delivery_tag) 
-    except Exception as ex:
-        print("Erro", ex)
-        channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+QUEUE_NAME = getenv("PRINTER_ROLE", "both")
+
+def on_message_factory(receipt_type):
+    def on_message(channel, method, properties, body):
+        try:
+            data = json.loads(body.decode())
+            print_receipt(printer, data)
+            if receipt_type == "both":
+                time.sleep(int(getenv("SLEEP", 2)))
+            channel.basic_ack(delivery_tag=method.delivery_tag)
+        except Exception:
+            channel.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
+    return on_message
 
 def shutdown(sig, frame):
     print("Shutting down...")
@@ -61,10 +67,20 @@ channel.queue_bind(
     routing_key="receipt.kitchen"
 )
 
-channel.basic_consume(
-    queue=getenv("QUEUE_NAME", "queue.client"),
-    on_message_callback=on_message
-)
+if QUEUE_NAME == "both":
+    channel.basic_consume(
+        queue="queue.client",
+        on_message_callback=on_message_factory("both")
+    )
+    channel.basic_consume(
+        queue="queue.kitchen",
+        on_message_callback=on_message_factory("both")
+    )
+else:
+    channel.basic_consume(
+        queue=f"queue.{QUEUE_NAME}",
+        on_message_callback=on_message_factory(QUEUE_NAME)
+    )
 
 signal.signal(signal.SIGTERM, shutdown)
 signal.signal(signal.SIGINT, shutdown)
