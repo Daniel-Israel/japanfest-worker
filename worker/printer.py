@@ -89,7 +89,7 @@ def print_receipt(printer, order):
                 txt = "   ----{}\n".format(customization)
                 printer.text(txt)
         printer.ln()
-        printer.print_and_feed(2)
+        printer.control("LF", 5)
         printer.cut()
 
     else:
@@ -103,7 +103,7 @@ def print_receipt(printer, order):
                 printer.text(txt)
         printer.text("\n")
         printer.ln()
-        printer.print_and_feed(2)
+        printer.control("LF", 5)
         printer.cut()
     return "Via {} do pedido {} impresso".format(
         receipt_type,
