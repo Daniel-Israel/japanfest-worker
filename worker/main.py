@@ -1,6 +1,5 @@
 import signal
 import json
-import time
 from os import getenv
 
 import pika
